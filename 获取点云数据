@@ -1,0 +1,43 @@
+Ubuntu 14.04    ros indigo对VLP-16的获取点云数据的配置
+
+1，安装驱动
+
+  sudo apt-get install ros-indigo-velodyne  
+
+
+2. 配置网络，连接到激光雷达：（这里需要注意，需要跟激光雷达的ip在同一个网段，例如激光雷达的ip为：192.168.188.201,那么相应的需要设计为192.168.188.
+.200和192.168.188.0)打开浏览器时也是192.168.188.201
+sudo ifconfig eth0 up
+sudo ip addr add 192.168.1.200 dev eth0
+
+sudo route add -net 192.168.1.0 netmask 255.255.255.0 dev eth0
+
+然后打开浏览器输入192.168.1.201可以看到激光雷达的配置文件。
+
+
+3. 新建一个ROS的工程：
+
+    mkdir -p catkin_velodyne/src  
+    cd catkin_velodyne/src  
+    git clone https://github.com/ros-drivers/velodyne.git  
+    cd ..  
+    rosdep install --from-paths src --ignore-src --rosdistro indigo -y  
+    catkin_make  
+    source devel/setup.bash  
+
+4. 把Velodyne XML文件转成ROS节点的YAML文件（转换后生成VLP-16.yaml）：（这里的这个xml文件需要在官方给的光盘当中）
+
+    rosrun velodyne_pointcloud gen_calibration.py ~/Desktop/VLP-16.xml  （根据自己保存的目录来）
+
+5. 加载：
+
+    roslaunch velodyne_pointcloud VLP16_points.launch calibration:=/home/phd/VLP-16.yaml  （根据自己保存的目录来）
+
+6. 实时显示点云图：
+
+    rosrun rviz rviz -f velodyne  
+
+然后在rviz中点Add by topic，增加PointCloud2，这样就可以实时显示获取的3D点云图。
+7. 记录数据：
+
+    rosbag record -O out /velodyne_points  
