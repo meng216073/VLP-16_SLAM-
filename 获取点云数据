@@ -41,3 +41,6 @@ sudo route add -net 192.168.1.0 netmask 255.255.255.0 dev eth0
 7. 记录数据：
 
     rosbag record -O out /velodyne_points  
+8. 后记：
+
+VeloView也是可以实时显示3D LiDAR激光雷达点云图的，保存格式是pcap。
